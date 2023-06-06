@@ -15,7 +15,7 @@ namespace ET.Server
             switch (scene.SceneType)
             {
                 case SceneType.Router:
-                    scene.AddComponent<RouterComponent, IPEndPoint, string>(startSceneConfig.OuterIPPort,
+                    scene.AddComponent<RouterComponent, IPEndPoint, string>(startSceneConfig.InnerIPOutPort,
                         startSceneConfig.StartProcessConfig.InnerIP
                     );
                     break;
@@ -34,9 +34,11 @@ namespace ET.Server
                 case SceneType.Map:
                     scene.AddComponent<UnitComponent>();
                     scene.AddComponent<AOIManagerComponent>();
+                    scene.AddComponent<CollisionListenerComponent>();
+                    scene.AddComponent<CollisionWorldComponent>();
                     break;
                 case SceneType.Location:
-                    scene.AddComponent<LocationComponent>();
+                    scene.AddComponent<LocationManagerComoponent>();
                     break;
                 case SceneType.Robot:
                     scene.AddComponent<RobotManagerComponent>();

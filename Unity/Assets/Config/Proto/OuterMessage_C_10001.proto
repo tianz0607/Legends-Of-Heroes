@@ -20,7 +20,7 @@ message C2M_TestRequest // IActorLocationRequest
 	string request = 2;
 }
 
-message M2C_TestResponse // IActorLocationResponse
+message M2C_TestResponse // IActorResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;
@@ -73,6 +73,8 @@ message UnitInfo
 	Unity.Mathematics.float3 Forward = 5;
 	map<int32, int64> KV = 6;
 	MoveInfo MoveInfo = 7;
+	int64 OwnerId = 8;
+	map<int32, int32> Skills = 9; //技能
 }
 
 message M2C_CreateUnits // IActorMessage
@@ -93,7 +95,7 @@ message M2C_StartSceneChange // IActorMessage
 
 message M2C_RemoveUnits // IActorMessage
 {
-	repeated int64 Units = 2;
+	repeated int64 Units = 1;
 }
 
 message C2M_PathfindingResult // IActorLocationMessage
@@ -102,30 +104,16 @@ message C2M_PathfindingResult // IActorLocationMessage
 	Unity.Mathematics.float3 Position = 2;
 }
 
+message C2M_Stop // IActorLocationMessage
+{
+	int32 RpcId = 1;
+}
+
 message M2C_PathfindingResult // IActorMessage
 {
 	int64 Id = 1;
 	Unity.Mathematics.float3 Position = 2;
 	repeated Unity.Mathematics.float3 Points = 3;
-}
-
-message C2M_JoystickMove // IActorLocationMessage
-{
-	int32 RpcId = 1;
-	Unity.Mathematics.float3 MoveForward = 2;
-}
-
-
-message M2C_JoystickMove // IActorMessage
-{
-	int64 Id = 1;
-	Unity.Mathematics.float3 Position = 2;
-	Unity.Mathematics.float3 MoveForward = 3;
-}
-
-message C2M_Stop // IActorLocationMessage
-{
-	int32 RpcId = 1;
 }
 
 message M2C_Stop // IActorMessage
@@ -234,7 +222,7 @@ message C2M_TestRobotCase2 // IActorLocationMessage
 	int32 N = 2;
 }
 
-message M2C_TestRobotCase2 // IActorMessage
+message M2C_TestRobotCase2 // IActorLocationMessage
 {
 	int32 RpcId = 1;
 	int32 N = 2;
@@ -265,6 +253,60 @@ message G2C_Benchmark // IResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+///////////////////////////////// Map Start ///////////////////////////////////
+
+//ResponseType M2C_JoystickMove
+message C2M_JoystickMove // IActorLocationMessage
+{
+	int32 RpcId = 1;
+	Unity.Mathematics.float3 MoveForward = 2;
+}
+
+message M2C_JoystickMove // IActorMessage
+{
+	int64 Id = 1;
+	Unity.Mathematics.float3 Position = 2;
+	Unity.Mathematics.float3 MoveForward = 3;
+}
+
+
+//ResponseType M2C_Operation
+message C2M_Operation // IActorLocationMessage
+{
+	int32 RpcId = 1;
+	int64 Id = 2;
+	repeated OperateInfo OperateInfos = 3;
+	
+}
+
+message M2C_Operation // IActorMessage
+{
+	int64 Id = 1;
+	repeated OperateReplyInfo OperateInfos = 2;
+}
+
+message OperateInfo
+{
+    int32 OperateType = 1; //操作类型
+    int32 InputType = 2; //输入类型，按下/抬起
+	Unity.Mathematics.float3 Vec3 = 3; //v3参数
+	int64 Value1 = 4;
+	int64 Value2 = 5;
+}
+message OperateReplyInfo
+{
+    int32 OperateType = 1; //操作类型
+	int32 Status = 2;
+}
+
+message M2C_SyncUnits // IActorMessage
+{
+	repeated UnitInfo Units = 1;
+}
+
+
+///////////////////////////////// Map End ///////////////////////////////////
 
 
 ///////////////////////////////// 房间相关  START ///////////////////////////////////

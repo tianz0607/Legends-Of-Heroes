@@ -1,4 +1,7 @@
-﻿namespace ET
+﻿using Box2DSharp.Dynamics;
+using Box2DSharp.Dynamics.Contacts;
+
+namespace ET
 {
     namespace EventType
     {
@@ -35,11 +38,26 @@
         {
             public Unit Unit;
         }
+        public struct AfterMyUnitCreate
+        {
+            public Unit unit;
+        }
 
         public struct UpdateRoomPlayers
         {
             public G2C_UpdateRoomPlayers roomPlayersProto;
         }
+        public struct OnCollisionContact
+        {
+            public Contact contact;
+            public bool isEnd;
+        }
 
+
+        public struct HitResult
+        {
+            public EHitResultType hitResultType;
+            public int value;
+        }
     }
 }

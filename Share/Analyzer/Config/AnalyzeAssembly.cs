@@ -26,7 +26,7 @@
         public static readonly string[] AllModel =
         {
             DotNetModel, UnityModel, 
-            UnityModelView, UnityModel, UnityModelCodes
+            UnityModelView, UnityModelViewCodes, UnityModelCodes
         };
 
         public static readonly string[] AllModelHotfix =
@@ -42,7 +42,11 @@
             UnityCore, UnityModel, UnityHotfix, UnityModelView, UnityHotfixView, 
             UnityModelCodes, UnityModelViewCodes, UnityHotfixCodes, UnityHotfixViewCodes
         };
-        
-        
+
+        public static readonly string[] ServerModelHotfix =
+        {
+            DotNetModel,DotNetHotfix,
+        };
+
     }
 }

@@ -78,7 +78,6 @@ namespace ET.Server
 
                     ActorMessageDispatcherInfo actorMessageDispatcherInfo = new(actorMessageHandlerAttribute.SceneType, imHandler);
 
-                    Log.Info($"register actor msg:{messageType.FullName}");
                     self.RegisterHandler(messageType, actorMessageDispatcherInfo);
                 }
             }
@@ -99,13 +98,13 @@ namespace ET.Server
             List<ActorMessageDispatcherInfo> list;
             if (!self.ActorMessageHandlers.TryGetValue(message.GetType(), out list))
             {
-                throw new Exception($"not found message handler: {message}");
+                throw new Exception($"not found message handler: {message} {entity.GetType().FullName}");
             }
 
-            SceneType sceneType = entity.DomainScene().SceneType;
+            SceneType sceneType = entity.Domain.SceneType;
             foreach (ActorMessageDispatcherInfo actorMessageDispatcherInfo in list)
             {
-                if (actorMessageDispatcherInfo.SceneType != sceneType)
+                if (!actorMessageDispatcherInfo.SceneType.HasSameFlag(sceneType))
                 {
                     continue;
                 }

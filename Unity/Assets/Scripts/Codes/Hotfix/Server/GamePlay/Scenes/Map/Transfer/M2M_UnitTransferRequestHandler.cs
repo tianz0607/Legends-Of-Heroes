@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using Unity.Mathematics;
 
 namespace ET.Server
@@ -39,9 +42,12 @@ namespace ET.Server
 			
 			// 加入aoi
 			unit.AddComponent<AOIEntity, int, float3>(9 * 1000, unit.Position);
-			
-			// 解锁location，可以接收发给Unit的消息
-			await LocationProxyComponent.Instance.UnLock(unit.Id, request.OldInstanceId, unit.InstanceId);
+            unit.AddComponent<BattleUnitComponent, List<int>>(unit.Config.BornSkills.ToList());
+            float radius = unit.GetComponent<NumericComponent>().GetAsInt(NumericType.Hp) / 100f;
+            unit.AddComponent<CollisionComponent>().AddCollider(EColliderType.Circle, Vector2.One * radius, Vector2.Zero, true, unit);
+
+            // 解锁location，可以接收发给Unit的消息
+            await LocationProxyComponent.Instance.UnLock(LocationType.Unit, unit.Id, request.OldInstanceId, unit.InstanceId);
 		}
 	}
 }

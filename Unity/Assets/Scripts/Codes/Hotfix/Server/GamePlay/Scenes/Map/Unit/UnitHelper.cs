@@ -7,7 +7,7 @@ namespace ET.Server
     [FriendOf(typeof(NumericComponent))]
     public static class UnitHelper
     {
-        public static UnitInfo CreateUnitInfo(Unit unit)
+        public static UnitInfo CreateUnitInfo(Unit unit, Unit owner = null)
         {
             UnitInfo unitInfo = new UnitInfo();
             NumericComponent nc = unit.GetComponent<NumericComponent>();
@@ -16,6 +16,10 @@ namespace ET.Server
             unitInfo.Type = (int)unit.Type;
             unitInfo.Position = unit.Position;
             unitInfo.Forward = unit.Forward;
+            if (owner != null)
+            {
+                unitInfo.OwnerId = owner.Id;
+            }
 
             MoveComponent moveComponent = unit.GetComponent<MoveComponent>();
             if (moveComponent != null)
@@ -32,11 +36,23 @@ namespace ET.Server
                 }
             }
 
-            unitInfo.KV = new Dictionary<int, long>();
-
-            foreach ((int key, long value) in nc.NumericDic)
+            if (nc != null)
             {
-                unitInfo.KV.Add(key, value);
+                unitInfo.KV = new Dictionary<int, long>();
+                foreach ((int key, long value) in nc.NumericDic)
+                {
+                    unitInfo.KV.Add(key, value);
+                }
+            }
+
+            if (unit.Config?.BornSkills?.Length > 0)
+            {
+                unitInfo.Skills = new Dictionary<int, int>();
+                //测试技能等级为1
+                foreach (int bornSkill in unit.Config.BornSkills)
+                {
+                    unitInfo.Skills[bornSkill] = 1;
+                }
             }
 
             return unitInfo;

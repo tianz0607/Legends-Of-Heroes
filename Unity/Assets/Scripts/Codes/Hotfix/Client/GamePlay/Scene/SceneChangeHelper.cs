@@ -1,4 +1,6 @@
-﻿namespace ET.Client
+﻿using ET.EventType;
+
+namespace ET.Client
 {
     public static class SceneChangeHelper
     {
@@ -19,7 +21,6 @@
             Wait_CreateMyUnit waitCreateMyUnit = await clientScene.GetComponent<ObjectWait>().Wait<Wait_CreateMyUnit>();
             M2C_CreateMyUnit m2CCreateMyUnit = waitCreateMyUnit.Message;
             Unit unit = UnitFactory.Create(currentScene, m2CCreateMyUnit.Unit);
-            // unitComponent.Add(unit);
             
             clientScene.RemoveComponent<AIComponent>();
             
@@ -27,6 +28,7 @@
 
             // 通知等待场景切换的协程
             clientScene.GetComponent<ObjectWait>().Notify(new Wait_SceneChangeFinish());
+            EventSystem.Instance.Publish(currentScene, new AfterMyUnitCreate() { unit = unit});
         }
     }
 }

@@ -4,20 +4,32 @@ using Unity.Mathematics;
 namespace ET.Server
 {
     [ComponentOf(typeof(Unit))]
-    public class AOIEntity: Entity, IAwake<int, float3>, IDestroy
+    public class AOIEntity : Entity, IAwake<int, float3>, IDestroy
     {
         public Unit Unit => this.GetParent<Unit>();
 
         public int ViewDistance;
 
-        public Cell Cell;
+        private EntityRef<Cell> cell;
+
+        public Cell Cell
+        {
+            get
+            {
+                return this.cell;
+            }
+            set
+            {
+                this.cell = value;
+            }
+        }
 
         // 观察进入视野的Cell
         public HashSet<long> SubEnterCells = new HashSet<long>();
 
         // 观察离开视野的Cell
         public HashSet<long> SubLeaveCells = new HashSet<long>();
-        
+
         // 观察进入视野的Cell
         public HashSet<long> enterHashSet = new HashSet<long>();
 
@@ -26,10 +38,10 @@ namespace ET.Server
 
         // 我看的见的Unit
         public Dictionary<long, AOIEntity> SeeUnits = new Dictionary<long, AOIEntity>();
-        
+
         // 看见我的Unit
         public Dictionary<long, AOIEntity> BeSeeUnits = new Dictionary<long, AOIEntity>();
-        
+
         // 我看的见的Player
         public Dictionary<long, AOIEntity> SeePlayers = new Dictionary<long, AOIEntity>();
 

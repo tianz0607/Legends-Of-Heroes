@@ -17,6 +17,8 @@ namespace ET
         private static readonly Queue<ISingleton> fixedUpdates = new Queue<ISingleton>();
         [StaticField]
         private static readonly Queue<ETTask> frameFinishTask = new Queue<ETTask>();
+        
+        public static bool IsOffLine { get; set; }
 
         public static T AddSingleton<T>() where T: Singleton<T>, new()
         {
@@ -46,6 +48,11 @@ namespace ET
             if (singleton is ISingletonUpdate)
             {
                 updates.Enqueue(singleton);
+            }
+            
+            if (singleton is ISingletonFixedUpdate)
+            {
+                fixedUpdates.Enqueue(singleton);
             }
             
             if (singleton is ISingletonLateUpdate)

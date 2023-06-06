@@ -100,6 +100,7 @@ namespace ET
         {
             try
             {
+                keyDic = new Dictionary<string, List<string>>();
                 //防止编译时裁剪掉protobuf
                 ProtoBuf.WireType.Fixed64.ToString();
                 
@@ -188,11 +189,18 @@ namespace ET
                 {
                     ExportExcel(path);
                 }
-                
-                if (Directory.Exists(clientProtoDir))
+
+                FileInfo[] byteFiles = new DirectoryInfo(clientProtoDir).GetFiles("*.bytes", SearchOption.AllDirectories);
+
+                for (int i = 0; i < byteFiles.Length; i++)
                 {
-                    Directory.Delete(clientProtoDir, true);
+                    FileInfo file = byteFiles[i];
+                    File.Delete(file.FullName);
                 }
+                // if (Directory.Exists(clientProtoDir))
+                // {
+                //     Directory.Delete(clientProtoDir, true);
+                // }
                 FileHelper.CopyDirectory("../Config/Excel/c", clientProtoDir);
                 
                 Log.Console("Export Excel Sucess!");
@@ -355,6 +363,8 @@ namespace ET
         {
             foreach (ExcelWorksheet worksheet in p.Workbook.Worksheets)
             {
+                if (worksheet.Name.Contains("#"))
+                    continue;
                 ExportSheetClass(worksheet, table, name);
             }
         }
@@ -415,6 +425,7 @@ namespace ET
             }
 
             keyDic[excelName] = configKeys;
+            // Log.Console($"000 :{excelName}, key count:{keyDic[excelName].Count}");
         }
 
         static void ExportClass(string protoName, Dictionary<string, HeadInfo> classField, ConfigType configType)
@@ -463,6 +474,7 @@ namespace ET
 	        int z = (int)(testKey & 0x000000000000FF00) >> 8;
 	        int k = (int)(testKey & 0x00000000000000FF);*/
 
+            // Log.Console($"excel:{protoName}, key count:{keyDic[protoName].Count}");
             if (keyDic.TryGetValue(protoName, out List<string> configKeys))
             {
                 if (configKeys.Count > 1)
@@ -650,8 +662,33 @@ namespace ET
             foreach (string jsonPath in jsonPaths)
             {
                 string json = File.ReadAllText(jsonPath);
-                object deserialize = BsonSerializer.Deserialize(json, type);
-                final.Merge(deserialize);
+                try
+                {
+                    object deserialize = BsonSerializer.Deserialize(json, type);
+                    final.Merge(deserialize);
+                }
+                catch
+                {
+                    #region 为了定位该文件中具体那一行出现了异常
+                    List<string> list = new List<string>(json.Split('\n'));
+                    if (list.Count > 0)
+                        list.RemoveAt(0);
+                    if (list.Count > 0)
+                        list.RemoveAt(list.Count - 1);
+                    foreach (string s in list)
+                    {
+                        try
+                        {
+                            BsonSerializer.Deserialize(s.Substring(0, s.Length - 1), subType);
+                        }
+                        catch (Exception)
+                        {
+                            Log.Console($"json : {s}");
+                            throw;
+                        }
+                    }
+                    #endregion
+                }
             }
 
             string path = Path.Combine(dir, $"{protoName}Category.bytes");
